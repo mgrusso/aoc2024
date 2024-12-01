@@ -1,5 +1,5 @@
 defmodule Aoc2024.Day1 do
-  def getresult do
+  def getresults do
     {:ok, contents} = File.read("input")
 
     # [ %{left: 40094, right: 37480}, %{left: 52117, right: 14510}, ... ]
@@ -20,13 +20,26 @@ defmodule Aoc2024.Day1 do
       |> Enum.sort(fn(i1, i2) -> order_items(i1, i2, :right) end)
       |> Enum.map(fn(i) -> i.right end)
 
-    # List of diff of each left and right value at the same list position
-    difflist =
-      Enum.zip(left_items, right_items)
-      |> Enum.map(fn{li, ri} -> abs(li - ri) end)
+    result_a = part_a(left_items, right_items)
 
-    # sum the values via recursive add
-    add_values(difflist, 0)
+    result_b = part_b(left_items, right_items)
+
+    [result_a | result_b]
+  end
+
+  defp part_a(left_items, right_items) do
+    # Build a list of differences and add the items to a sum
+    Enum.zip(left_items, right_items)
+    |> Enum.map(fn{li, ri} -> abs(li - ri) end)
+    |> add_values(0)
+  end
+
+  defp part_b(left_items, right_items) do
+    right_freq = Enum.frequencies(right_items)
+
+    left_items
+    |> Enum.map(fn(x) -> x * Map.get(right_freq, x, 0) end)
+    |> add_values(0)
   end
 
   defp splitlist(line) do
@@ -49,4 +62,5 @@ defmodule Aoc2024.Day1 do
   end
 end
 
-IO.puts(Integer.to_string(Aoc2024.Day1.getresult))
+[ h | t ] = Aoc2024.Day1.getresults
+IO.puts "Part a: #{Integer.to_string(h)} - Part b #{Integer.to_string(t)}"
