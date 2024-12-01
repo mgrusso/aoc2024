@@ -1,32 +1,36 @@
-defmodule Aoc.Day1 do
-  def getlist do
+defmodule Aoc2024.Day1 do
+  def getresult do
     {:ok, contents} = File.read("input")
 
+    # [ %{left: 40094, right: 37480}, %{left: 52117, right: 14510}, ... ]
     itemlist =
       contents
       |> String.split("\n")
       |> Enum.map(fn(line) -> splitlist(line) end)
 
+    # Sorted list with only left values
     left_items =
       itemlist
       |> Enum.sort(fn(i1, i2) -> order_items(i1, i2, :left) end)
       |> Enum.map(fn(i) -> i.left end)
 
+    # same for the right values
     right_items =
       itemlist
       |> Enum.sort(fn(i1, i2) -> order_items(i1, i2, :right) end)
       |> Enum.map(fn(i) -> i.right end)
 
+    # List of diff of each left and right value at the same list position
     difflist =
       Enum.zip(left_items, right_items)
       |> Enum.map(fn{li, ri} -> abs(li - ri) end)
 
-    IO.puts("#{Integer.to_string(add_values(difflist, 0))}")
-
+    # sum the values via recursive add
+    add_values(difflist, 0)
   end
 
   defp splitlist(line) do
-    [left , right] = line |> String.split("   ")
+    [left , right] = line |> String.split(" ", trim: true)
     %{left: String.to_integer(left) , right: String.to_integer(right)}
   end
 
@@ -45,4 +49,4 @@ defmodule Aoc.Day1 do
   end
 end
 
-Aoc.Day1.getlist
+IO.puts(Integer.to_string(Aoc2024.Day1.getresult))
